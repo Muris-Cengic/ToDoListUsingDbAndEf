@@ -8,22 +8,35 @@ namespace ToDoListUsingDbAndEf
         static void Main(string[] args)
         {
             initializeDatabaseData();
-
-            using (var db = new todolistEntities())
+            bool continueProgram = true;
+            do
             {
-                foreach (var category in db.Categories)
+                Console.WriteLine("1: Add a cateogry. ");
+                Console.WriteLine("Enter 0 to exit.");
+                string option = Console.ReadLine();
+                switch (option)
                 {
-                    Console.WriteLine("========================================================");
-                    Console.WriteLine($"Category: {category.CategoryName}");
-                    Console.WriteLine("Tasks:");
+                    case "1":
+                        {
+                            Console.WriteLine("Enter category name: ");
+                            string categoryName = Console.ReadLine();
+                            Category category = new Category();
+                            category.CategoryName = categoryName;
+                            using (var datab = new todolistEntities())
+                            {
+                                datab.Categories.AddObject(category);
+                                datab.SaveChanges();
+                            }
+                        }
+                        break;
 
-                    foreach (var task in category.Tasks)
-                    {
-                        Console.WriteLine($"      {task.Title} - {task.DateCreated}");
-                    }
-                }    
-            }
-            Console.ReadKey();
+                    case "0":
+                        {
+                            continueProgram = false;
+                        }
+                        break;
+                }
+            } while (continueProgram);
         }
 
         private static void initializeDatabaseData()
