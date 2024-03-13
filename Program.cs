@@ -13,6 +13,7 @@ namespace ToDoListUsingDbAndEf
             {
                 Console.WriteLine("1: Add a cateogry. ");
                 Console.WriteLine("2. Show exisiting categories. ");
+                Console.WriteLine("3. Add a task. ");
                 Console.WriteLine("Enter 0 to exit.");
                 string option = Console.ReadLine();
                 switch (option)
@@ -34,13 +35,29 @@ namespace ToDoListUsingDbAndEf
                     case "2":
                         Console.WriteLine("--------------------------------------------");
                         Console.WriteLine("\nList of Catetgories: ");
+
+                        ShowCategories();
+                        break;
+
+                    case "3":
+                        Console.WriteLine("Enter task title: ");
+                        string taskTitle = Console.ReadLine();
+
+                        ShowCategories();
+
+                        Console.WriteLine("\nChoose Catetgory ID: ");
+                        int categoryID = int.Parse(Console.ReadLine());
+
+                        Task task = new Task();
+                        task.Title = taskTitle;
+                        task.DateCreated = DateTime.Now;
+                        task.IsCompleted = false;
+                        task.CategoryID = categoryID;
+
                         using (var db = new todolistEntities())
                         {
-                            var categories = db.Categories;
-                            foreach (Category category in categories)
-                            {
-                                Console.WriteLine($"{category.CategoryID}. \t{category.CategoryName}");
-                            }
+                            db.AddToTasks(task);
+                            db.SaveChanges();
                         }
                         break;
 
@@ -51,6 +68,18 @@ namespace ToDoListUsingDbAndEf
                         break;
                 }
             } while (continueProgram);
+
+        }
+        static void ShowCategories()
+        {
+            using (var db = new todolistEntities())
+            {
+                var categories = db.Categories;
+                foreach (Category category in categories)
+                {
+                    Console.WriteLine($"{category.CategoryID}. \t{category.CategoryName}");
+                }
+            }
         }
 
         private static void initializeDatabaseData()
