@@ -12,6 +12,7 @@ namespace ToDoListUsingDbAndEf
             do
             {
                 Console.WriteLine("1: Add a cateogry. ");
+                Console.WriteLine("2. Show exisiting categories. ");
                 Console.WriteLine("Enter 0 to exit.");
                 string option = Console.ReadLine();
                 switch (option)
@@ -26,6 +27,19 @@ namespace ToDoListUsingDbAndEf
                             {
                                 datab.Categories.AddObject(category);
                                 datab.SaveChanges();
+                            }
+                        }
+                        break;
+
+                    case "2":
+                        Console.WriteLine("--------------------------------------------");
+                        Console.WriteLine("\nList of Catetgories: ");
+                        using (var db = new todolistEntities())
+                        {
+                            var categories = db.Categories;
+                            foreach (Category category in categories)
+                            {
+                                Console.WriteLine($"{category.CategoryID}. \t{category.CategoryName}");
                             }
                         }
                         break;
