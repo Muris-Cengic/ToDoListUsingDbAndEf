@@ -15,8 +15,10 @@ namespace ToDoListUsingDbAndEf
                 Console.WriteLine("2. Show exisiting categories. ");
                 Console.WriteLine("3. Add a task. ");
                 Console.WriteLine("4. Show Task. ");
+                Console.WriteLine("5. Remove Task. ");
                 Console.WriteLine("Enter 0 to exit.");
                 string option = Console.ReadLine();
+                Console.Clear();
                 switch (option)
                 {
                     case "1":
@@ -63,7 +65,7 @@ namespace ToDoListUsingDbAndEf
                             }
                         }
                         break;
-                      
+
                     case "0":
                         {
                             continueProgram = false;
@@ -86,9 +88,41 @@ namespace ToDoListUsingDbAndEf
                             }
                         }
                         break;
+
+                    case "5":
+                        {
+                            ShowCategories();
+                            Console.WriteLine("\nChoose a category ID for the task you want to delete: ");
+                            int cID = int.Parse(Console.ReadLine());
+
+                            using (var db = new todolistEntities())
+                            {
+                                /* var tasks = 
+                                    from t in db.Tasks
+                                    where t.CategoryID == cID
+                                    select t; */
+                                var tasks = db.Tasks.Where(t => t.CategoryID == cID).ToList();
+
+                                Console.Clear();
+
+                                foreach (Task t in tasks)
+                                {
+                                    Console.WriteLine($"{t.TaskID}  {t.Title}");
+                                }
+                                
+                                Console.WriteLine("\nEnter task ID to delete: ");
+                                int tID = int.Parse(Console.ReadLine());
+                                Console.Clear();
+
+                                Task task = db.Tasks.First(t => t.TaskID == tID);
+                                db.Tasks.DeleteObject(task);
+                                Console.WriteLine("Task deleted. ");
+                                db.SaveChanges();
+                            }
+                        }
+                        break;
                 }
             } while (continueProgram);
-
         }
         static void ShowCategories()
         {
