@@ -11,12 +11,14 @@ namespace ToDoListUsingDbAndEf
             bool continueProgram = true;
             do
             {
+                Console.WriteLine("--------------------------------------------");
                 Console.WriteLine("1: Add a cateogry. ");
                 Console.WriteLine("2. Show exisiting categories. ");
                 Console.WriteLine("3. Add a task. ");
                 Console.WriteLine("4. Show Task. ");
                 Console.WriteLine("5. Remove Task. ");
-                Console.WriteLine("Enter 0 to exit.");
+                Console.WriteLine("6. Toggle task status. ");
+                Console.WriteLine("\n\nEnter 0 to exit.");
                 string option = Console.ReadLine();
                 Console.Clear();
                 switch (option)
@@ -71,45 +73,19 @@ namespace ToDoListUsingDbAndEf
                             continueProgram = false;
                         }
                         break;
+
                     case "4":
                         {
-                            ShowCategories();
-                            Console.WriteLine("\nChoose Catetgory ID: ");
-                            int cID = int.Parse(Console.ReadLine());
-
-                            using (var db = new todolistEntities())
-                            {
-                                var tasks = db.Tasks.Where(x=>x.CategoryID == cID);
-
-                                foreach (Task t in tasks)
-                                {
-                                        Console.WriteLine($"{t.Title}");
-                                }
-                            }
+                            ShowTaskByCategory();
                         }
                         break;
 
                     case "5":
                         {
-                            ShowCategories();
-                            Console.WriteLine("\nChoose a category ID for the task you want to delete: ");
-                            int cID = int.Parse(Console.ReadLine());
-
+                            ShowTaskByCategory();
+                          
                             using (var db = new todolistEntities())
                             {
-                                /* var tasks = 
-                                    from t in db.Tasks
-                                    where t.CategoryID == cID
-                                    select t; */
-                                var tasks = db.Tasks.Where(t => t.CategoryID == cID).ToList();
-
-                                Console.Clear();
-
-                                foreach (Task t in tasks)
-                                {
-                                    Console.WriteLine($"{t.TaskID}  {t.Title}");
-                                }
-                                
                                 Console.WriteLine("\nEnter task ID to delete: ");
                                 int tID = int.Parse(Console.ReadLine());
                                 Console.Clear();
@@ -121,9 +97,58 @@ namespace ToDoListUsingDbAndEf
                             }
                         }
                         break;
+
+                    case "6":
+                        {
+                            ShowTaskByCategory();
+
+                            Console.WriteLine("\nEnter task ID to toggle its status: ");
+                            int tID = int.Parse(Console.ReadLine());
+                            Console.Clear();
+
+                            using ( var db = new todolistEntities())
+                            {
+                                var task = db.Tasks.First(t => t.TaskID == tID);
+                                var previousState = task.IsCompleted;
+                                task.IsCompleted = !previousState;
+                                db.SaveChanges();
+                            }
+                        }
+                        break;
                 }
             } while (continueProgram);
         }
+
+        private static void ShowTaskByCategory()
+        {
+            ShowCategories();
+            Console.WriteLine("\nChoose Catetgory ID: ");
+            int cID = int.Parse(Console.ReadLine());
+            Console.Clear();
+            using (var db = new todolistEntities())
+            {
+                /* var tasks = 
+                                  from t in db.Tasks
+                                  where t.CategoryID == cID
+                                  select t; */
+                var tasks = db.Tasks.Where(x => x.CategoryID == cID);
+
+                if (tasks.Any())
+                {
+                    Console.WriteLine("Task ID\tCompleted\tTitle\n");
+
+                    foreach (Task t in tasks)
+                    {
+                        Console.WriteLine($"{t.TaskID}\t{(t.IsCompleted?"Yes":"No")}\t\t{t.Title} ");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("There are no tasks in this category. ");
+                }
+            }
+        }
+
         static void ShowCategories()
         {
             using (var db = new todolistEntities())
