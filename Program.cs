@@ -14,6 +14,7 @@ namespace ToDoListUsingDbAndEf
                 Console.WriteLine("1: Add a cateogry. ");
                 Console.WriteLine("2. Show exisiting categories. ");
                 Console.WriteLine("3. Add a task. ");
+                Console.WriteLine("4. Show Task. ");
                 Console.WriteLine("Enter 0 to exit.");
                 string option = Console.ReadLine();
                 switch (option)
@@ -40,30 +41,49 @@ namespace ToDoListUsingDbAndEf
                         break;
 
                     case "3":
-                        Console.WriteLine("Enter task title: ");
-                        string taskTitle = Console.ReadLine();
-
-                        ShowCategories();
-
-                        Console.WriteLine("\nChoose Catetgory ID: ");
-                        int categoryID = int.Parse(Console.ReadLine());
-
-                        Task task = new Task();
-                        task.Title = taskTitle;
-                        task.DateCreated = DateTime.Now;
-                        task.IsCompleted = false;
-                        task.CategoryID = categoryID;
-
-                        using (var db = new todolistEntities())
                         {
-                            db.AddToTasks(task);
-                            db.SaveChanges();
+                            Console.WriteLine("Enter task title: ");
+                            string taskTitle = Console.ReadLine();
+
+                            ShowCategories();
+
+                            Console.WriteLine("\nChoose Catetgory ID: ");
+                            int categoryID = int.Parse(Console.ReadLine());
+
+                            Task task = new Task();
+                            task.Title = taskTitle;
+                            task.DateCreated = DateTime.Now;
+                            task.IsCompleted = false;
+                            task.CategoryID = categoryID;
+
+                            using (var db = new todolistEntities())
+                            {
+                                db.AddToTasks(task);
+                                db.SaveChanges();
+                            }
                         }
                         break;
-
+                      
                     case "0":
                         {
                             continueProgram = false;
+                        }
+                        break;
+                    case "4":
+                        {
+                            ShowCategories();
+                            Console.WriteLine("\nChoose Catetgory ID: ");
+                            int cID = int.Parse(Console.ReadLine());
+
+                            using (var db = new todolistEntities())
+                            {
+                                var tasks = db.Tasks.Where(x=>x.CategoryID == cID);
+
+                                foreach (Task t in tasks)
+                                {
+                                        Console.WriteLine($"{t.Title}");
+                                }
+                            }
                         }
                         break;
                 }
